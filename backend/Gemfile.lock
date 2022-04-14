@@ -36,6 +36,7 @@ PLATFORMS
 DEPENDENCIES
   bcrypt
   pg
+  rack
   sequel
   sinatra
   sinatra-contrib

@@ -86,6 +86,6 @@ class SessionLogin
   end
 
   def redirect(path)
-    [302, {"Location": path}, []]
+    [302, { 'Location' => path }, []]
   end
 end

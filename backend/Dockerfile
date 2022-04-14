@@ -9,5 +9,5 @@ RUN bundle install
 
 COPY . .
 
-CMD ["bundle", "exec", "ruby", "app.rb", "-o", "api"]
+CMD ["bundle", "exec", "rackup", "-s", "thin", "-o", "api", "-p", "4567"]
 
