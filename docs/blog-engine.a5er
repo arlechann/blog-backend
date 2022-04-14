@@ -17,8 +17,8 @@ Domain=ref_ID=integer
 DomainInfo="ref_ID","integer","",""
 Domain=メールアドレス=varchar(255)
 DomainInfo="メールアドレス","varchar(255)","","email"
-Domain=パスワードハッシュ=char(255)
-DomainInfo="パスワードハッシュ","char(255)","TODO: 文字列長","password"
+Domain=パスワードハッシュ=char(60)
+DomainInfo="パスワードハッシュ","char(60)","","password"
 Domain=スラッグ=text
 DomainInfo="スラッグ","text","","slug"
 Domain=タイトル=varchar(255)
@@ -105,7 +105,7 @@ EffectMode=None
 Tag= 
 Color=$000000
 BkColor=$FFFFFF
-ModifiedDateTime=20220411040117
+ModifiedDateTime=20220415015453
 Position="MAIN",850,250,336,135
 ZOrder=10
 
@@ -220,7 +220,7 @@ PName=publish_statuses
 LName=公開状態
 Comment=
 TableOption=
-Page=Main
+Page=MAIN
 Left=250
 Top=1200
 Field="ID","id","*ID","NOT NULL",0,"","",$FFFFFFFF,""
@@ -231,7 +231,7 @@ EffectMode=None
 Color=$000000
 BkColor=$FFFFFF
 ModifiedDateTime=20220412003631
-Position="Main",250,1200,386,198
+Position="MAIN",250,1200,386,198
 ZOrder=38
 
 [Relation]
@@ -261,7 +261,7 @@ PName=comments
 LName=コメント
 Comment=
 TableOption=
-Page=Main
+Page=MAIN
 Left=850
 Top=1200
 Field="投稿ID","post_id","*ref_ID","NOT NULL",,"","",$FFFFFFFF,""
@@ -274,7 +274,7 @@ EffectMode=None
 Color=$000000
 BkColor=$FFFFFF
 ModifiedDateTime=20220412005437
-Position="Main",850,1200,325,225
+Position="MAIN",850,1200,325,225
 ZOrder=42
 
 [Relation]

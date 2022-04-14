@@ -1,5 +1,5 @@
 -- Project Name : blog-engine
--- Date/Time    : 2022/04/12 3:10:51
+-- Date/Time    : 2022/04/15 1:55:06
 -- Author       : arlechann
 -- RDBMS Type   : PostgreSQL
 -- Application  : A5:SQL Mk-2
@@ -10,7 +10,7 @@ DROP TABLE if exists administrator_secrets CASCADE;
 CREATE TABLE administrator_secrets (
   id serial NOT NULL
   , administrator_id integer NOT NULL
-  , password char(255) NOT NULL
+  , password char(60) NOT NULL
   , CONSTRAINT administrator_secrets_PKC PRIMARY KEY (id)
 ) ;
 
