@@ -5,6 +5,8 @@ services:
     networks:
       - api
       - db
+    depends_on:
+      - db
   nginx:
     build: ./frontend
     image: blog-nginx
