@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ブログ管理 - <%= @title %></title>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="/admin">トップ</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <%= yield %>
+    </main>
+
+  </body>
+</html>
