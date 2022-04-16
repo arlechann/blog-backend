@@ -14,18 +14,24 @@ class App < Sinatra::Application
   
   get '/admin/' do
     redirect to('/admin/login') unless login?
-    'Logged-in!'
+
+    @title = 'トップ'
+    erb :'admin/index'
   end
   
   get '/admin/debug' do
     data = {
-      'session' => session.to_s,
+      'session' => session.inspect,
     }
+
+    @title = 'デバッグ'
     erb :'admin/debug', :locals => { data: data }
   end
   
   get '/admin/login' do
     redirect to('/admin/') if login?
+
+    @title = 'ログイン'
     default = { message: '', email: '' }
     erb :'admin/login', :locals => default.merge(params)
   end
