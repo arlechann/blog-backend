@@ -11,4 +11,12 @@ class AdministratorRepository
       FROM administrators
     SQL
   end
+
+  def find_by_id(administrator_id)
+    Administrator.from_h(@db[<<~SQL, administrator_id].first)
+      SELECT id, email
+      FROM administrators
+      WHERE id = ?
+    SQL
+  end
 end

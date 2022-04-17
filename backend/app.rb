@@ -7,6 +7,7 @@ require_relative 'lib/db'
 require_relative 'lib/login'
 require_relative 'error/http'
 require_relative 'use_case/post/list_post_use_case'
+require_relative 'use_case/post/show_post_use_case'
 require_relative 'use_case/post/create_post_use_case'
 require_relative 'use_case/post/update_post_use_case'
 require_relative 'use_case/post/delete_post_use_case'
@@ -82,7 +83,10 @@ class App < Sinatra::Application
     publish_statuses = ps_repo.all
 
     @title = '投稿作成'
-    erb :'admin/post/add', :locals => { post: nil, publish_statuses: publish_statuses }
+    erb :'admin/post/add', :locals => {
+      post: nil,
+      publish_statuses: publish_statuses
+    }
   end
 
   post '/admin/post/add' do
@@ -109,17 +113,28 @@ class App < Sinatra::Application
   get '/admin/post/edit/:id' do
     redirect to('/admin/') unless login?
 
-    post_repo = PostRepository.new(DB)
     ps_repo = PublishStatusRepository.new(DB)
-    post_id = params[:id]
-    administrator_id = session[:user_id][:id]
-
-    post = post_repo.find_by_id(post_id)
-    redirect to('/admin/post') unless post.administrator_id == administrator_id
     publish_statuses = ps_repo.all
 
-    @title = '投稿編集'
-    erb :'admin/post/add', :locals => { post: post, publish_statuses: publish_statuses }
+    input = ShowPostUseCase::InputPort.new(id: params[:id])
+
+    output = Proc.new do |post, publish_status, administrator|
+      @title = '投稿編集'
+      erb :'admin/post/add', :locals => {
+        post: post,
+        publish_statuses: publish_statuses
+      }
+    end
+
+    ShowPostUseCase
+      .new(
+        input,
+        output,
+        PostRepository.new(DB),
+        PublishStatusRepository.new(DB),
+        AdministratorRepository.new(DB),
+      )
+      .process
   end
 
   post '/admin/post/edit/:id' do
