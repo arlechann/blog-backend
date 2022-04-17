@@ -5,9 +5,9 @@ require 'time'
 
 require_relative 'lib/db'
 require_relative 'lib/login'
-require_relative 'model/post'
 require_relative 'error/http'
 require_relative 'use_case/post/create_post_use_case'
+require_relative 'use_case/post/update_post_use_case'
 require_relative 'repository/administrator_repository'
 require_relative 'repository/post_repository'
 require_relative 'repository/publish_status_repository'
@@ -118,18 +118,22 @@ class App < Sinatra::Application
   post '/admin/post/edit/:id' do
     redirect to('/admin/') unless login?
 
-    post_repo = PostRepository.new(DB)
-    post_id = params[:id]
-    administrator_id = session[:user_id][:id]
+    input = UpdatePostUseCase::InputPort.new(
+      id: params[:id],
+      title: params[:title] || '',
+      content: params[:content] || '',
+      publish_status_id: params[:publish_status],
+    )
 
-    post = post_repo.find_by_id(post_id)
-    raise HTTPError::Forbidden unless post.administrator_id == administrator_id
-    post.update_title(params[:title] || '')
-    post.update_content(params[:content] || '')
-    post.update_publish_status_id(params[:publish_status])
-    updated_row = post_repo.update(post)
-    redirect to(`/admin/post/edit/#{post_id}`) if updated_row.zero?
-    redirect to('/admin/post')
+    output = Proc.new do |post, updated_row_count|
+      post_id = post.id
+      redirect to(`/admin/post/edit/#{post_id}`) if updated_row_count.zero?
+      redirect to('/admin/post')
+    end
+
+    UpdatePostUseCase
+      .new(input, output, PostRepository.new(DB))
+      .process
   end
 
   post '/admin/post/delete/:id' do
