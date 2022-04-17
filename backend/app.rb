@@ -8,7 +8,7 @@ require_relative 'lib/login'
 
 class App < Sinatra::Application
   session_login
-  
+
   get '/' do
     'Hello world!'
   end
@@ -39,11 +39,12 @@ class App < Sinatra::Application
 
   get '/admin/post' do
     redirect to('/admin/') unless login?
-
+    
+    administrator_id = session[:user_id][:id]
     posts = Database.new().all_posts
 
     @title = '投稿一覧'
-    erb :'admin/post/index', :locals => { posts: posts }
+    erb :'admin/post/index', :locals => { administrator_id: administrator_id, posts: posts }
   end
 
   get '/admin/post/add' do
@@ -52,7 +53,7 @@ class App < Sinatra::Application
     publish_statuses = Database.new().all_publish_statuses
 
     @title = '投稿作成'
-    erb :'admin/post/add', :locals => { publish_statuses: publish_statuses }
+    erb :'admin/post/add', :locals => { post: {}, publish_statuses: publish_statuses }
   end
 
   post '/admin/post/add' do
@@ -71,11 +72,46 @@ class App < Sinatra::Application
     redirect to('/admin/post')
   end
 
+  get '/admin/post/edit/:id' do
+    redirect to('/admin/') unless login?
+
+    post_id = params[:id]
+    administrator_id = session[:user_id][:id]
+    db = Database.new()
+    post = db.find_post_by_id(post_id)
+    redirect to('/admin/post') unless post[:administrator_id] == administrator_id
+    publish_statuses = db.all_publish_statuses
+
+    @title = '投稿編集'
+    erb :'admin/post/add', :locals => { post: post, publish_statuses: publish_statuses }
+  end
+
+  post '/admin/post/edit/:id' do
+    redirect to('/admin/') unless login?
+
+    post_id = params[:id]
+    administrator_id = session[:user_id][:id]
+    db = Database.new()
+    post = db.find_post_by_id(post_id)
+    return [403, {}, '<h1>Forbidden</h1>'] unless post[:administrator_id] == administrator_id
+    post[:title] = params[:title] || post[:title]
+    post[:content] = params[:content] || post[:content]
+    post[:publish_status_id] = params[:publish_status] || post[:publish_status_id]
+    post[:last_updated_at] = Time.now.iso8601
+    updated_row = db.update_post(post)
+    redirect to(`/admin/post/edit/#{post_id}`) if updated_row.zero?
+    redirect to('/admin/post')
+  end
+
   post '/admin/post/delete/:id' do
     redirect to('/admin/') unless login?
 
     post_id = params[:id]
-    Database.new().delete_post_by_id(post_id)
+    administrator_id = session[:user_id][:id]
+    db = Database.new()
+    post = db.find_post_by_id(post_id)
+    return [403, {}, '<h1>Forbidden</h1>'] unless post[:administrator_id] == administrator_id
+    deleted_row = db.delete_post_by_id(post_id)
     redirect to('/admin/post')
   end
 

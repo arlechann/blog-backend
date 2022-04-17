@@ -22,8 +22,11 @@ class Database
         posts.id AS id,
         title,
         content,
-        publish_statuses.label AS publish_status,
-        administrators.email AS administrator,
+        publish_status_id,
+        publish_statuses.code AS publish_status_code,
+        publish_statuses.label AS publish_status_label,
+        administrator_id,
+        administrators.email AS administrator_email,
         created_at,
         last_updated_at
       FROM posts
@@ -31,6 +34,28 @@ class Database
         ON posts.publish_status_id = publish_statuses.id
       INNER JOIN administrators
         ON posts.administrator_id = administrators.id
+    SQL
+  end
+
+  def find_post_by_id(post_id)
+    DB[<<~SQL, post_id].first
+      SELECT
+        posts.id AS id,
+        title,
+        content,
+        publish_status_id,
+        publish_statuses.code AS publish_status_code,
+        publish_statuses.label AS publish_status_label,
+        administrator_id,
+        administrators.email AS administrator_email,
+        created_at,
+        last_updated_at
+      FROM posts
+      INNER JOIN publish_statuses
+        ON posts.publish_status_id = publish_statuses.id
+      INNER JOIN administrators
+        ON posts.administrator_id = administrators.id
+      WHERE posts.id = ?
     SQL
   end
 
@@ -43,6 +68,16 @@ class Database
 
   def insert_post(post)
     DB[:posts].insert(post)
+  end
+
+  def update_post(post)
+    DB[:posts].where({ id: post[:id] }).update({
+      title: post[:title],
+      content: post[:content],
+      publish_status_id: post[:publish_status_id],
+      administrator_id: post[:administrator_id],
+      last_updated_at: post[:last_updated_at],
+    })
   end
 
   def delete_post_by_id(post_id)

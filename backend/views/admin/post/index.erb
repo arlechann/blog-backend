@@ -21,10 +21,15 @@
         <td><%= post[:id] %></td>
         <td><%= post[:title] %></td>
         <td><%= post[:content] %></td>
-        <td><%= post[:publish_status] %></td>
-        <td><%= post[:administrator] %></td>
+        <td><%= post[:publish_status_label] %></td>
+        <td><%= post[:administrator_email] %></td>
         <td><%= post[:created_at].getlocal.strftime("%Y/%m/%d %H:%M:%S") %></td>
         <td><%= post[:last_updated_at].getlocal.strftime("%Y/%m/%d %H:%M:%S") %></td>
+        <td>
+          <% if post[:administrator_id] == administrator_id %>
+            <a href="./post/edit/<%= post[:id] %>">編集</a>
+          <% end %>
+        </td>
         <td>
           <form action="./post/delete/<%= post[:id] %>" method="POST">
             <input type="submit" value="削除" />
