@@ -6,6 +6,7 @@ require 'time'
 require_relative 'lib/db'
 require_relative 'lib/login'
 require_relative 'model/post'
+require_relative 'error/http'
 require_relative 'repository/administrator_repository'
 require_relative 'repository/post_repository'
 require_relative 'repository/publish_status_repository'
@@ -116,7 +117,7 @@ class App < Sinatra::Application
     administrator_id = session[:user_id][:id]
 
     post = post_repo.find_by_id(post_id)
-    return [403, {}, '<h1>Forbidden</h1>'] unless post.administrator_id == administrator_id
+    raise HTTPError::Forbidden unless post.administrator_id == administrator_id
     post.update_title(params[:title] || '')
     post.update_content(params[:content] || '')
     post.update_publish_status_id(params[:publish_status])
@@ -132,13 +133,17 @@ class App < Sinatra::Application
     post_id = params[:id]
     administrator_id = session[:user_id][:id]
     post = post_repo.find_by_id(post_id)
-    return [403, {}, '<h1>Forbidden</h1>'] unless post.administrator_id == administrator_id
+    raise HTTPError::Forbidden unless post.administrator_id == administrator_id
     deleted_row = post_repo.delete_by_id(post_id)
     redirect to('/admin/post')
   end
 
   get '/api/v1/ping' do
     JSON.generate(status: :success, message: :pong)
+  end
+
+  error HTTPError::Forbidden do
+    "<h1>403 Forbidden</h1>"
   end
 end
 
