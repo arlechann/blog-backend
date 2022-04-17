@@ -6,6 +6,7 @@ require 'time'
 require_relative 'lib/db'
 require_relative 'lib/login'
 require_relative 'error/http'
+require_relative 'use_case/post/list_post_use_case'
 require_relative 'use_case/post/create_post_use_case'
 require_relative 'use_case/post/update_post_use_case'
 require_relative 'use_case/post/delete_post_use_case'
@@ -51,22 +52,27 @@ class App < Sinatra::Application
   get '/admin/post' do
     redirect to('/admin/') unless login?
     
-    post_repo = PostRepository.new(DB)
-    ps_repo = PublishStatusRepository.new(DB)
-    admin_repo = AdministratorRepository.new(DB)
     administrator_id = session[:user_id][:id]
 
-    posts = post_repo.all
-    publish_statuses = ps_repo.all
-    administrators = admin_repo.all
+    output = Proc.new do |posts, publish_statuses, administrators|
+      @title = '投稿一覧'
+      erb :'admin/post/index', :locals => {
+        administrator_id: administrator_id,
+        posts: posts,
+        publish_statuses: publish_statuses,
+        administrators: administrators,
+      }
+    end
 
-    @title = '投稿一覧'
-    erb :'admin/post/index', :locals => {
-      administrator_id: administrator_id,
-      posts: posts,
-      publish_statuses: publish_statuses,
-      administrators: administrators,
-    }
+    ListPostUseCase
+      .new(
+        nil,
+        output,
+        PostRepository.new(DB),
+        PublishStatusRepository.new(DB),
+        AdministratorRepository.new(DB),
+      )
+      .process
   end
 
   get '/admin/post/add' do
