@@ -7,6 +7,7 @@ require_relative 'lib/db'
 require_relative 'lib/login'
 require_relative 'model/post'
 require_relative 'error/http'
+require_relative 'use_case/post/create_post_use_case'
 require_relative 'repository/administrator_repository'
 require_relative 'repository/post_repository'
 require_relative 'repository/publish_status_repository'
@@ -80,17 +81,22 @@ class App < Sinatra::Application
   post '/admin/post/add' do
     redirect to('/admin/') unless login?
 
-    post_repo = PostRepository.new(DB)
-
-    post = Post.new(
+    input = CreatePostUseCase::InputPort.new(
       title: params[:title] || '',
       content: params[:content] || '',
       publish_status_id: params[:publish_status],
       administrator_id: session[:user_id][:id],
     )
-    pk = post_repo.insert(post)
-    redirect to('/admin/post/add') if pk.nil?
-    redirect to('/admin/post')
+
+    output = Proc.new do |post|
+      post_id = post.id
+      redirect to('/admin/post/add') if post_id.nil?
+      redirect to('/admin/post')
+    end
+
+    CreatePostUseCase
+      .new(input, output, PostRepository.new(DB))
+      .process
   end
 
   get '/admin/post/edit/:id' do
