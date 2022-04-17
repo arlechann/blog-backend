@@ -1,0 +1,25 @@
+<form method="POST">
+  <div>
+    <label for="title">タイトル</label>
+    <input type="text" id="title" name="title" value="<%= h post && post.title %>" />
+  </div>
+  <div>
+    <label for="content">本文</label>
+    <textarea id="content" name="content"><%= h post && post.content %></textarea>
+  </div>
+  <div>
+    <label for="publish_status">公開状態</label>
+    <select id="publish_status" name="publish_status" required>
+      <% publish_statuses.each do |status| %>
+        <% if post && status.id == post.publish_status_id %>
+          <option value="<%= h status.id %>" selected><%= h status.label %></option>
+        <% else %>
+          <option value="<%= h status.id %>"><%= h status.label %></option>
+        <% end %>
+      <% end %>
+    </select>
+  </div>
+  <div>
+    <input type="submit" value="登録" />
+  </div>
+</form>

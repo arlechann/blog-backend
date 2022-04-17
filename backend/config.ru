@@ -1,7 +1,6 @@
 require_relative 'app'
+require_relative 'lib/db'
 require_relative 'lib/login'
-
-DB = Sequel.connect('postgres://postgres:password@db:5432/blog')
 
 use Rack::Session::Cookie,
   expire_after: 30 * 24 * 60 * 60, # 30 days
@@ -17,13 +16,7 @@ use SessionLogin, {
   form_login_id_key: 'email',
   failed_message: 'ログイン失敗',
 } do |email|
-  admin = DB[<<~SQL, email: email].first
-    SELECT administrators.id AS id, email, password
-    FROM administrators
-    JOIN administrator_secrets
-      ON administrators.id = administrator_secrets.administrator_id
-    WHERE email = :email
-  SQL
+  admin = Database.new().find_administrator_by_email(email)
   return nil if admin.nil?
   admin[:user_id] = admin[:email]
   admin

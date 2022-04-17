@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ブログ管理 - <%= @title %></title>
+    <title>ブログ管理 - <%= h @title %></title>
   </head>
   <body>
     <header>
       <nav>
         <ul>
           <li><a href="/admin">トップ</a></li>
+          <li><a href="/admin/post">投稿一覧</a></li>
         </ul>
       </nav>
     </header>

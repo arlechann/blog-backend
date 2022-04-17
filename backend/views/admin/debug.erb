@@ -13,12 +13,12 @@
         </tr>
       </thead>
       <tbody>
-        <% data.each { |key, value| %>
+        <% data.each do |key, value| %>
           <tr>
-            <td><%= key.to_s %></td>
-            <td><%= value.to_s %></td>
+            <td><%= h key.to_s %></td>
+            <td><%= h value.to_s %></td>
           </tr>
-        <% } %>
+        <% end %>
       </tbody>
     </table>
   </body>
