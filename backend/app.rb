@@ -13,6 +13,10 @@ require_relative 'repository/publish_status_repository'
 class App < Sinatra::Application
   session_login
 
+  helpers do
+    alias_method :h, :escape_html
+  end
+
   get '/' do
     'Hello world!'
   end
