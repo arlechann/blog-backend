@@ -1,0 +1,36 @@
+<div>
+  <a href="./post/add">新規作成</a>
+</div>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>タイトル</th>
+      <th>本文</th>
+      <th>公開状態</th>
+      <th>投稿者</th>
+      <th>作成日時</th>
+      <th>最終更新日時</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% posts.each do |post| %>
+      <tr>
+        <td><%= post[:id] %></td>
+        <td><%= post[:title] %></td>
+        <td><%= post[:content] %></td>
+        <td><%= post[:publish_status] %></td>
+        <td><%= post[:administrator] %></td>
+        <td><%= post[:created_at].getlocal.strftime("%Y/%m/%d %H:%M:%S") %></td>
+        <td><%= post[:last_updated_at].getlocal.strftime("%Y/%m/%d %H:%M:%S") %></td>
+        <td>
+          <form action="./post/delete/<%= post[:id] %>" method="POST">
+            <input type="submit" value="削除" />
+          </form>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

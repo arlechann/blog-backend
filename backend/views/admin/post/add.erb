@@ -1,0 +1,21 @@
+<form method="POST">
+  <div>
+    <label for="title">タイトル</label>
+    <input type="text" id="title" name="title" />
+  </div>
+  <div>
+    <label for="content">本文</label>
+    <textarea id="content" name="content"></textarea>
+  </div>
+  <div>
+    <label for="publish_status">公開状態</label>
+    <select id="publish_status" name="publish_status" required>
+      <% publish_statuses.each do |status| %>
+        <option value="<%= status[:id] %>"><%= status[:label] %></option>
+      <% end %>
+    </select>
+  </div>
+  <div>
+    <input type="submit" value="登録" />
+  </div>
+</form>
