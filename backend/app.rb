@@ -8,6 +8,7 @@ require_relative 'lib/login'
 require_relative 'error/http'
 require_relative 'use_case/post/create_post_use_case'
 require_relative 'use_case/post/update_post_use_case'
+require_relative 'use_case/post/delete_post_use_case'
 require_relative 'repository/administrator_repository'
 require_relative 'repository/post_repository'
 require_relative 'repository/publish_status_repository'
@@ -139,13 +140,14 @@ class App < Sinatra::Application
   post '/admin/post/delete/:id' do
     redirect to('/admin/') unless login?
 
-    post_repo = PostRepository.new(DB)
-    post_id = params[:id]
-    administrator_id = session[:user_id][:id]
-    post = post_repo.find_by_id(post_id)
-    raise HTTPError::Forbidden unless post.administrator_id == administrator_id
-    deleted_row = post_repo.delete_by_id(post_id)
-    redirect to('/admin/post')
+    input = DeletePostUseCase::InputPort.new(id: params[:id])
+    output = Proc.new do |post, deleted_row_count|
+      redirect to('/admin/post')
+    end
+
+    DeletePostUseCase
+      .new(input, output, PostRepository.new(DB))
+      .process
   end
 
   get '/api/v1/ping' do
