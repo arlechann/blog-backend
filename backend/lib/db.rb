@@ -1,6 +1,8 @@
 require 'logger'
 require 'sequel'
 
+require_relative '../model/post'
+
 DB ||= Sequel.connect('postgres://postgres:password@db:5432/blog', {
   logger: Logger.new('log/sql.log'),
 })
@@ -17,7 +19,7 @@ class Database
   end
 
   def all_posts
-    DB[<<~SQL].all
+    DB[<<~SQL].all.map { |post| Post.from_h(post) }
       SELECT
         posts.id AS id,
         title,
@@ -38,7 +40,7 @@ class Database
   end
 
   def find_post_by_id(post_id)
-    DB[<<~SQL, post_id].first
+    Post.from_h(DB[<<~SQL, post_id].first)
       SELECT
         posts.id AS id,
         title,
@@ -67,16 +69,25 @@ class Database
   end
 
   def insert_post(post)
-    DB[:posts].insert(post)
+    post.set_id(
+      DB[:posts].insert({
+        title: post.title,
+        content: post.content,
+        publish_status_id: post.publish_status_id,
+        administrator_id: post.administrator_id,
+        created_at: post.created_at,
+        last_updated_at: post.last_updated_at,
+      })
+    )
   end
 
   def update_post(post)
-    DB[:posts].where({ id: post[:id] }).update({
-      title: post[:title],
-      content: post[:content],
-      publish_status_id: post[:publish_status_id],
-      administrator_id: post[:administrator_id],
-      last_updated_at: post[:last_updated_at],
+    DB[:posts].where({ id: post.id }).update({
+      title: post.title,
+      content: post.content,
+      publish_status_id: post.publish_status_id,
+      administrator_id: post.administrator_id,
+      last_updated_at: post.last_updated_at,
     })
   end
 

@@ -5,6 +5,7 @@ require 'time'
 
 require_relative 'lib/db'
 require_relative 'lib/login'
+require_relative 'model/post'
 
 class App < Sinatra::Application
   session_login
@@ -53,20 +54,18 @@ class App < Sinatra::Application
     publish_statuses = Database.new().all_publish_statuses
 
     @title = '投稿作成'
-    erb :'admin/post/add', :locals => { post: {}, publish_statuses: publish_statuses }
+    erb :'admin/post/add', :locals => { post: nil, publish_statuses: publish_statuses }
   end
 
   post '/admin/post/add' do
     redirect to('/admin/') unless login?
 
-    post = {
+    post = Post.new(
       title: params[:title] || '',
       content: params[:content] || '',
       publish_status_id: params[:publish_status],
       administrator_id: session[:user_id][:id],
-      created_at: Time.now.iso8601,
-      last_updated_at: Time.now.iso8601,
-    }
+    )
     pk = Database.new().insert_post(post)
     redirect to('/admin/post/add') if pk.nil?
     redirect to('/admin/post')
@@ -79,7 +78,7 @@ class App < Sinatra::Application
     administrator_id = session[:user_id][:id]
     db = Database.new()
     post = db.find_post_by_id(post_id)
-    redirect to('/admin/post') unless post[:administrator_id] == administrator_id
+    redirect to('/admin/post') unless post.administrator_id == administrator_id
     publish_statuses = db.all_publish_statuses
 
     @title = '投稿編集'
@@ -93,11 +92,10 @@ class App < Sinatra::Application
     administrator_id = session[:user_id][:id]
     db = Database.new()
     post = db.find_post_by_id(post_id)
-    return [403, {}, '<h1>Forbidden</h1>'] unless post[:administrator_id] == administrator_id
-    post[:title] = params[:title] || post[:title]
-    post[:content] = params[:content] || post[:content]
-    post[:publish_status_id] = params[:publish_status] || post[:publish_status_id]
-    post[:last_updated_at] = Time.now.iso8601
+    return [403, {}, '<h1>Forbidden</h1>'] unless post.administrator_id == administrator_id
+    post.update_title(params[:title] || '')
+    post.update_content(params[:content] || '')
+    post.update_publish_status_id(params[:publish_status])
     updated_row = db.update_post(post)
     redirect to(`/admin/post/edit/#{post_id}`) if updated_row.zero?
     redirect to('/admin/post')
@@ -110,7 +108,7 @@ class App < Sinatra::Application
     administrator_id = session[:user_id][:id]
     db = Database.new()
     post = db.find_post_by_id(post_id)
-    return [403, {}, '<h1>Forbidden</h1>'] unless post[:administrator_id] == administrator_id
+    return [403, {}, '<h1>Forbidden</h1>'] unless post.administrator_id == administrator_id
     deleted_row = db.delete_post_by_id(post_id)
     redirect to('/admin/post')
   end
