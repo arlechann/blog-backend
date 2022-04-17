@@ -11,10 +11,10 @@
     <label for="publish_status">公開状態</label>
     <select id="publish_status" name="publish_status" required>
       <% publish_statuses.each do |status| %>
-        <% if post && status[:id] == post.publish_status_id %>
-          <option value="<%= status[:id] %>" selected><%= status[:label] %></option>
+        <% if post && status.id == post.publish_status_id %>
+          <option value="<%= status.id %>" selected><%= status.label %></option>
         <% else %>
-          <option value="<%= status[:id] %>"><%= status[:label] %></option>
+          <option value="<%= status.id %>"><%= status.label %></option>
         <% end %>
       <% end %>
     </select>

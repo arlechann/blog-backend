@@ -1,13 +1,22 @@
 require 'logger'
 require 'sequel'
 
+require_relative '../model/administrator'
 require_relative '../model/post'
+require_relative '../model/publish_status'
 
 DB ||= Sequel.connect('postgres://postgres:password@db:5432/blog', {
   logger: Logger.new('log/sql.log'),
 })
 
 class Database
+  def all_administrators
+    DB[<<~SQL].all.map { |admin| Administrator.from_h(admin) }
+      SELECT id, email
+      FROM administrators
+    SQL
+  end
+
   def find_administrator_by_email(email)
     DB[<<~SQL, email: email].first
       SELECT administrators.id AS id, email, password
@@ -25,10 +34,7 @@ class Database
         title,
         content,
         publish_status_id,
-        publish_statuses.code AS publish_status_code,
-        publish_statuses.label AS publish_status_label,
         administrator_id,
-        administrators.email AS administrator_email,
         created_at,
         last_updated_at
       FROM posts
@@ -46,10 +52,7 @@ class Database
         title,
         content,
         publish_status_id,
-        publish_statuses.code AS publish_status_code,
-        publish_statuses.label AS publish_status_label,
         administrator_id,
-        administrators.email AS administrator_email,
         created_at,
         last_updated_at
       FROM posts
@@ -62,9 +65,17 @@ class Database
   end
 
   def all_publish_statuses
-    DB[<<~SQL].all
+    DB[<<~SQL].all.map { |status| PublishStatus.from_h(status) }
       SELECT id, code, label
       FROM publish_statuses
+    SQL
+  end
+
+  def find_publish_status_by_id(publish_status_id)
+    PublishStatus.from_h(DB[<<~SQL, publish_status_id].first)
+      SELECT id, code, label
+      FROM publish_statuses
+      WHERE id = ?
     SQL
   end
 

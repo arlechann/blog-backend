@@ -42,10 +42,18 @@ class App < Sinatra::Application
     redirect to('/admin/') unless login?
     
     administrator_id = session[:user_id][:id]
-    posts = Database.new().all_posts
+    db = Database.new()
+    posts = db.all_posts
+    publish_statuses = db.all_publish_statuses
+    administrators = db.all_administrators
 
     @title = '投稿一覧'
-    erb :'admin/post/index', :locals => { administrator_id: administrator_id, posts: posts }
+    erb :'admin/post/index', :locals => {
+      administrator_id: administrator_id,
+      posts: posts,
+      publish_statuses: publish_statuses,
+      administrators: administrators,
+    }
   end
 
   get '/admin/post/add' do

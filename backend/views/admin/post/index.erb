@@ -21,8 +21,8 @@
         <td><%= post.id %></td>
         <td><%= post.title %></td>
         <td><%= post.content %></td>
-        <td><%= post.publish_status_id %></td>
-        <td><%= post.administrator_id %></td>
+        <td><%= publish_statuses.find { |status| status.id == post.publish_status_id }.label %></td>
+        <td><%= administrators.find { |admin| admin.id == post.administrator_id }.email %></td>
         <td><%= post.created_at.getlocal.strftime("%Y/%m/%d %H:%M:%S") %></td>
         <td><%= post.last_updated_at.getlocal.strftime("%Y/%m/%d %H:%M:%S") %></td>
         <td>
