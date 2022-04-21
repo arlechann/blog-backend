@@ -4,7 +4,7 @@ require 'json'
 require 'time'
 
 require_relative 'lib/db'
-require_relative 'lib/login'
+require_relative 'lib/session_login/login'
 require_relative 'error/http'
 require_relative 'use_case/post/list_post_use_case'
 require_relative 'use_case/post/show_post_use_case'

@@ -3,8 +3,8 @@ require 'uri'
 require 'bcrypt'
 
 class Sinatra::Base
-  def self.session_login(user_id = :user_id)
-    define_method(:login_user) do
+  def self.session_login(user_id = 'user_id')
+    define_method(:login_user_id) do
       self.session[user_id]
     end
 
@@ -25,7 +25,6 @@ class SessionLogin
     @form_login_id_key = config[:form_login_id_key] || 'username'
     @form_password_key = config[:form_password_key] || 'password'
     @session_key = config[:session_key] || 'user_id'
-    @user_pk = config[:user_pk] || 'id'
     @failed_message = config[:failed_message] || 'Fail to login.'
     @user_info_proc = block
   end
@@ -47,7 +46,7 @@ class SessionLogin
     password = form_data[form_password_key]
     user = login(login_id, password)
     return login_failed if user.nil?
-    save_id(req, user)
+    save_id(req, user[:id])
     login_succeeded
   end
 

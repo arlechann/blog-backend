@@ -1,6 +1,6 @@
 require_relative 'app'
 require_relative 'lib/db'
-require_relative 'lib/login'
+require_relative 'lib/session_login/login'
 
 use Rack::Session::Cookie,
   expire_after: 30 * 24 * 60 * 60, # 30 days
