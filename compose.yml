@@ -2,6 +2,8 @@ services:
   api:
     build: ./backend
     image: blog-api
+    environment:
+      TZ: Asia/Tokyo
     networks:
       - api
       - db
@@ -10,6 +12,8 @@ services:
   nginx:
     build: ./frontend
     image: blog-nginx
+    environment:
+      TZ: Asia/Tokyo
     ports:
       - 80:80
     networks:
@@ -20,6 +24,7 @@ services:
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: blog
+      TZ: Asia/Tokyo
     volumes:
       - db:/var/lib/postgresql/data
     networks:
