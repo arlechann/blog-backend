@@ -4,7 +4,7 @@ require 'json'
 require 'time'
 
 require_relative 'lib/db'
-require_relative 'lib/login'
+require_relative 'lib/session_login/login'
 require_relative 'error/http'
 require_relative 'use_case/post/list_post_use_case'
 require_relative 'use_case/post/show_post_use_case'
@@ -16,7 +16,7 @@ require_relative 'repository/post_repository'
 require_relative 'repository/publish_status_repository'
 
 class App < Sinatra::Application
-  session_login
+  session_login_utils
 
   helpers do
     alias_method :h, :escape_html
@@ -53,7 +53,7 @@ class App < Sinatra::Application
   get '/admin/post' do
     redirect to('/admin/') unless login?
     
-    administrator_id = session[:user_id][:id]
+    administrator_id = login_user_id
 
     output = Proc.new do |posts, publish_statuses, administrators|
       @title = '投稿一覧'
@@ -96,7 +96,7 @@ class App < Sinatra::Application
       title: params[:title] || '',
       content: params[:content] || '',
       publish_status_id: params[:publish_status],
-      administrator_id: session[:user_id][:id],
+      administrator_id: login_user_id,
     )
 
     output = Proc.new do |post|
