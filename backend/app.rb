@@ -23,41 +23,37 @@ class App < Sinatra::Application
   end
 
   get '/' do
-    'Hello world!'
-  end
-  
-  get '/admin/' do
-    redirect to('/admin/login') unless login?
+    redirect to('/login') unless login?
 
     @title = 'トップ'
-    erb :'admin/index'
+    erb :'index'
   end
   
-  get '/admin/debug' do
+  get '/debug' do
     data = {
       'session' => session.inspect,
     }
 
     @title = 'デバッグ'
-    erb :'admin/debug', :locals => { data: data }
+    erb :'debug', :locals => { data: data }
   end
   
-  get '/admin/login' do
-    redirect to('/admin/') if login?
+  get '/login' do
+    redirect to('/') if login?
 
     @title = 'ログイン'
     default = { message: '', email: '' }
-    erb :'admin/login', :locals => default.merge(params)
+    erb :'login', :locals => default.merge(params)
   end
 
-  get '/admin/post' do
-    redirect to('/admin/') unless login?
+  get '/post' do
+    redirect to('/') unless login?
     
     administrator_id = login_user_id
 
     output = Proc.new do |posts, publish_statuses, administrators|
       @title = '投稿一覧'
-      erb :'admin/post/index', :locals => {
+      erb :'post/index', :locals => {
         administrator_id: administrator_id,
         posts: posts,
         publish_statuses: publish_statuses,
@@ -76,21 +72,21 @@ class App < Sinatra::Application
       .process
   end
 
-  get '/admin/post/add' do
-    redirect to('/admin/') unless login?
+  get '/post/add' do
+    redirect to('/') unless login?
 
     ps_repo = PublishStatusRepository.new(DB)
     publish_statuses = ps_repo.all
 
     @title = '投稿作成'
-    erb :'admin/post/add', :locals => {
+    erb :'post/add', :locals => {
       post: nil,
       publish_statuses: publish_statuses
     }
   end
 
-  post '/admin/post/add' do
-    redirect to('/admin/') unless login?
+  post '/post/add' do
+    redirect to('/') unless login?
 
     input = CreatePostUseCase::InputPort.new(
       title: params[:title] || '',
@@ -101,8 +97,8 @@ class App < Sinatra::Application
 
     output = Proc.new do |post|
       post_id = post.id
-      redirect to('/admin/post/add') if post_id.nil?
-      redirect to('/admin/post')
+      redirect to('/post/add') if post_id.nil?
+      redirect to('/post')
     end
 
     CreatePostUseCase
@@ -110,8 +106,8 @@ class App < Sinatra::Application
       .process
   end
 
-  get '/admin/post/edit/:id' do
-    redirect to('/admin/') unless login?
+  get '/post/edit/:id' do
+    redirect to('/') unless login?
 
     ps_repo = PublishStatusRepository.new(DB)
     publish_statuses = ps_repo.all
@@ -120,7 +116,7 @@ class App < Sinatra::Application
 
     output = Proc.new do |post, publish_status, administrator|
       @title = '投稿編集'
-      erb :'admin/post/add', :locals => {
+      erb :'post/add', :locals => {
         post: post,
         publish_statuses: publish_statuses
       }
@@ -137,8 +133,8 @@ class App < Sinatra::Application
       .process
   end
 
-  post '/admin/post/edit/:id' do
-    redirect to('/admin/') unless login?
+  post '/post/edit/:id' do
+    redirect to('/') unless login?
 
     input = UpdatePostUseCase::InputPort.new(
       id: params[:id],
@@ -149,8 +145,8 @@ class App < Sinatra::Application
 
     output = Proc.new do |post, updated_row_count|
       post_id = post.id
-      redirect to(`/admin/post/edit/#{post_id}`) if updated_row_count.zero?
-      redirect to('/admin/post')
+      redirect to(`/post/edit/#{post_id}`) if updated_row_count.zero?
+      redirect to('/post')
     end
 
     UpdatePostUseCase
@@ -158,12 +154,12 @@ class App < Sinatra::Application
       .process
   end
 
-  post '/admin/post/delete/:id' do
-    redirect to('/admin/') unless login?
+  post '/post/delete/:id' do
+    redirect to('/') unless login?
 
     input = DeletePostUseCase::InputPort.new(id: params[:id])
     output = Proc.new do |post, deleted_row_count|
-      redirect to('/admin/post')
+      redirect to('/post')
     end
 
     DeletePostUseCase

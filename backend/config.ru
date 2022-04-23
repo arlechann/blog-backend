@@ -10,9 +10,6 @@ use Rack::Session::Cookie,
 use Rack::Protection
 
 use Rack::SessionLogin, {
-  login_path: '/admin/login',
-  logout_path: '/admin/logout',
-  success_path: '/admin/',
   form_login_id_key: 'email',
   failed_message: 'ログイン失敗',
 } do |email|
