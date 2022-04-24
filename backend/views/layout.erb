@@ -6,10 +6,16 @@
   <body>
     <header>
       <nav>
-        <ul>
-          <li><a href="/">トップ</a></li>
-          <li><a href="/post">投稿一覧</a></li>
-        </ul>
+        <% if @user %>
+          <ul>
+            <li><a href="/">トップ</a></li>
+            <li><a href="/post">投稿一覧</a></li>
+            <li><a href="/logout">ログアウト</a></li>
+          </ul>
+          <div>
+            <%= @user.email %>
+          </div>
+        <% end %>
       </nav>
     </header>
 
