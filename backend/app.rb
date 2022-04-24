@@ -166,6 +166,48 @@ class App < Sinatra::Application
     JSON.generate(status: :success, message: :pong)
   end
 
+  get '/api/v1/posts' do
+    output = Proc.new do |posts, publish_statuses, administrators|
+      [
+        200,
+        { 'Content-Type' => 'application/json' },
+        JSON.generate(posts.map { |post| post.to_h })
+      ]
+    end
+
+    ListPostUseCase
+      .new(
+        nil,
+        output,
+        PostRepository.new(DB),
+        PublishStatusRepository.new(DB),
+        AdministratorRepository.new(DB),
+      )
+      .process
+  end
+
+  get '/api/v1/posts/:id' do
+    input = ShowPostUseCase::InputPort.new(id: params[:id])
+
+    output = Proc.new do |post, publish_status, administrator|
+      [
+        200,
+        { 'Content-Type' => 'application/json' },
+        JSON.generate(post.to_h)
+      ]
+    end
+
+    ShowPostUseCase
+      .new(
+        input,
+        output,
+        PostRepository.new(DB),
+        PublishStatusRepository.new(DB),
+        AdministratorRepository.new(DB),
+      )
+      .process
+  end
+
   error HTTPError::Forbidden do
     "<h1>403 Forbidden</h1>"
   end

@@ -38,6 +38,18 @@ class Post
     )
   end
 
+  def to_h
+    {
+      id: id,
+      title: title,
+      content: content,
+      publish_status_id: publish_status_id,
+      administrator_id: administrator_id,
+      created_at: created_at,
+      last_updated_at: last_updated_at,
+    }
+  end
+
   def update_title(title, last_updated_at = Time.now.iso8601)
     return false if @title == title
     @title = title
