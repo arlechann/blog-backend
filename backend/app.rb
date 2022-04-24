@@ -22,9 +22,16 @@ class App < Sinatra::Application
     alias_method :h, :escape_html
   end
 
-  get '/' do
-    redirect to('/login') unless login?
+  before do
+    without_login_paths = ['/login', '/debug']
+    return if request.path_info.start_with?('/api') || without_login_paths.include?(request.path_info)
 
+    user_id = login_user_id
+    redirect to('/login') if user_id.nil?
+    @user = AdministratorRepository.new(DB).find_by_id(user_id)
+  end
+
+  get '/' do
     @title = 'トップ'
     erb :'index'
   end
@@ -47,8 +54,6 @@ class App < Sinatra::Application
   end
 
   get '/post' do
-    redirect to('/') unless login?
-    
     administrator_id = login_user_id
 
     output = Proc.new do |posts, publish_statuses, administrators|
@@ -73,8 +78,6 @@ class App < Sinatra::Application
   end
 
   get '/post/add' do
-    redirect to('/') unless login?
-
     ps_repo = PublishStatusRepository.new(DB)
     publish_statuses = ps_repo.all
 
@@ -86,8 +89,6 @@ class App < Sinatra::Application
   end
 
   post '/post/add' do
-    redirect to('/') unless login?
-
     input = CreatePostUseCase::InputPort.new(
       title: params[:title] || '',
       content: params[:content] || '',
@@ -107,8 +108,6 @@ class App < Sinatra::Application
   end
 
   get '/post/edit/:id' do
-    redirect to('/') unless login?
-
     ps_repo = PublishStatusRepository.new(DB)
     publish_statuses = ps_repo.all
 
@@ -134,8 +133,6 @@ class App < Sinatra::Application
   end
 
   post '/post/edit/:id' do
-    redirect to('/') unless login?
-
     input = UpdatePostUseCase::InputPort.new(
       id: params[:id],
       title: params[:title] || '',
@@ -155,8 +152,6 @@ class App < Sinatra::Application
   end
 
   post '/post/delete/:id' do
-    redirect to('/') unless login?
-
     input = DeletePostUseCase::InputPort.new(id: params[:id])
     output = Proc.new do |post, deleted_row_count|
       redirect to('/post')
