@@ -20,7 +20,7 @@ class LoginUserRepository
       FROM administrators
       JOIN administrator_secrets
         ON administrators.id = administrator_secrets.administrator_id
-      WHERE id = ?
+      WHERE administrators.id = ?
     SQL
   end
 

@@ -58,7 +58,7 @@ module Rack
       login_id = form_data[@form_login_id_key]
       password = form_data[@form_password_key]
       is_success = login(req, login_id, password)
-      login_succeeded if is_success
+      return login_succeeded if is_success
       login_failed
     end
 
@@ -69,6 +69,7 @@ module Rack
       is_verified = verify_password(user[:password], password)
       return false unless is_verified
       save_id(req, user[:id])
+      user
     end
 
     def login_succeeded
