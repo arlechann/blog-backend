@@ -9,6 +9,7 @@ class PostRepository
     @db[<<~SQL].all.map { |post| Post.from_h(post) }
       SELECT
         posts.id AS id,
+        slugs.slug AS slug,
         title,
         content,
         publish_status_id,
@@ -16,6 +17,8 @@ class PostRepository
         created_at,
         last_updated_at
       FROM posts
+      LEFT JOIN slugs
+        ON posts.id = slugs.post_id
       INNER JOIN publish_statuses
         ON posts.publish_status_id = publish_statuses.id
       INNER JOIN administrators
@@ -27,6 +30,7 @@ class PostRepository
     Post.from_h(@db[<<~SQL, post_id].first)
       SELECT
         posts.id AS id,
+        slugs.slug AS slug,
         title,
         content,
         publish_status_id,
@@ -34,11 +38,35 @@ class PostRepository
         created_at,
         last_updated_at
       FROM posts
+      LEFT JOIN slugs
+        ON posts.id = slugs.post_id
       INNER JOIN publish_statuses
         ON posts.publish_status_id = publish_statuses.id
       INNER JOIN administrators
         ON posts.administrator_id = administrators.id
       WHERE posts.id = ?
+    SQL
+  end
+
+  def find_by_slug(slug)
+    Post.from_h(@db[<<~SQL, slug].first)
+      SELECT
+        posts.id AS id,
+        slugs.slug AS slug,
+        title,
+        content,
+        publish_status_id,
+        administrator_id,
+        created_at,
+        last_updated_at
+      FROM posts
+      INNER JOIN slugs
+        ON posts.id = slugs.post_id
+      INNER JOIN publish_statuses
+        ON posts.publish_status_id = publish_statuses.id
+      INNER JOIN administrators
+        ON posts.administrator_id = administrators.id
+      WHERE slugs.slug = ?
     SQL
   end
 

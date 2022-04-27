@@ -1,10 +1,11 @@
 require 'time'
 
 class Post
-  attr_reader :id, :title, :content, :publish_status_id, :administrator_id, :created_at, :last_updated_at
+  attr_reader :id, :slug, :title, :content, :publish_status_id, :administrator_id, :created_at, :last_updated_at
 
   def initialize(
     id: nil,
+    slug: nil,
     title: '',
     content: '',
     publish_status_id:,
@@ -13,6 +14,7 @@ class Post
     last_updated_at: Time.now.iso8601
   )
     @id = id
+    @slug = slug
     @title = title
     @content = content
     @publish_status_id = publish_status_id
@@ -29,6 +31,7 @@ class Post
   def self.from_h(hash)
     self.new(
       id: hash[:id],
+      slug: hash[:slug],
       title: hash[:title],
       content: hash[:content],
       publish_status_id: hash[:publish_status_id],
@@ -41,6 +44,7 @@ class Post
   def to_h
     {
       id: id,
+      slug: slug,
       title: title,
       content: content,
       publish_status_id: publish_status_id,
@@ -48,6 +52,13 @@ class Post
       created_at: created_at,
       last_updated_at: last_updated_at,
     }
+  end
+
+  def update_slug(slug, last_updated_at = Time.now.iso8601)
+    return false if @slug == slug
+    @slug = slug
+    @last_updated_at = last_updated_at
+    true
   end
 
   def update_title(title, last_updated_at = Time.now.iso8601)
