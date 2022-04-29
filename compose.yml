@@ -10,7 +10,7 @@ services:
     depends_on:
       - db
   nginx:
-    build: ./frontend
+    build: ./web
     image: blog-nginx
     environment:
       TZ: Asia/Tokyo
