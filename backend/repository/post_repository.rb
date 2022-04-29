@@ -81,19 +81,59 @@ class PostRepository
         last_updated_at: post.last_updated_at,
       })
     )
+    save_slug(post.id, post.slug)
+    nil
   end
 
   def update(post)
-    @db[:posts].where({ id: post.id }).update({
+    updated_row = @db[:posts].where({ id: post.id }).update({
       title: post.title,
       content: post.content,
       publish_status_id: post.publish_status_id,
       administrator_id: post.administrator_id,
       last_updated_at: post.last_updated_at,
     })
+    slug_updated_row = save_slug(post.id, post.slug)
+    [updated_row, slug_updated_row].max
   end
 
   def delete_by_id(post_id)
     @db[:posts].where({ id: post_id }).delete
+    nil
+  end
+
+  private
+
+  def save_slug(post_id, slug)
+    if slug.nil?
+      delete_slug_by_post_id(post_id)
+    else
+      slug_updated_row = update_slug(post_id, slug)
+      if slug_updated_row == 0
+        insert_slug(post_id, slug)
+        1
+      else
+        slug_updated_row
+      end
+    end
+  end
+
+  def insert_slug(post_id, slug)
+    @db[:slugs].insert({
+      post_id: post_id,
+      slug: slug,
+    })
+  end
+
+  def update_slug(post_id, slug)
+    @db[:slugs]
+      .where({ post_id: post_id })
+      .update({
+        slug: slug
+      })
+  end
+
+  def delete_slug_by_post_id(post_id)
+    @db[:slugs].where({ post_id: post_id }).delete
   end
 end
