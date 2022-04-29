@@ -1,5 +1,0 @@
-services:
-  api:
-    volumes:
-      - ./backend:/opt/blog
-
