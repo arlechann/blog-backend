@@ -90,6 +90,7 @@ class App < Sinatra::Application
 
   post '/post/add' do
     input = CreatePostUseCase::InputPort.new(
+      slug: params[:slug],
       title: params[:title] || '',
       content: params[:content] || '',
       publish_status_id: params[:publish_status],
@@ -97,8 +98,7 @@ class App < Sinatra::Application
     )
 
     output = Proc.new do |post|
-      post_id = post.id
-      redirect to('/post/add') if post_id.nil?
+      redirect to('/post/add') if post.id.nil?
       redirect to('/post')
     end
 
@@ -135,14 +135,15 @@ class App < Sinatra::Application
   post '/post/edit/:id' do
     input = UpdatePostUseCase::InputPort.new(
       id: params[:id],
+      slug: params[:slug],
       title: params[:title] || '',
       content: params[:content] || '',
       publish_status_id: params[:publish_status],
     )
 
-    output = Proc.new do |post, updated_row_count|
+    output = Proc.new do |post, updated_row|
       post_id = post.id
-      redirect to(`/post/edit/#{post_id}`) if updated_row_count.zero?
+      redirect to("/post/edit/#{post_id}") if updated_row.nil? || updated_row == 0
       redirect to('/post')
     end
 

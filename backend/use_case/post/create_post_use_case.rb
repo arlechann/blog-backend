@@ -1,5 +1,6 @@
 class CreatePostUseCase
   InputPort = Struct.new(
+    :slug,
     :title,
     :content,
     :publish_status_id,
@@ -15,6 +16,7 @@ class CreatePostUseCase
 
   def process
     post = Post.new(
+      slug: @input_port.slug,
       title: @input_port.title,
       content: @input_port.content,
       publish_status_id: @input_port.publish_status_id,

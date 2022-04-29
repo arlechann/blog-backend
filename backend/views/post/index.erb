@@ -5,6 +5,7 @@
   <thead>
     <tr>
       <th>ID</th>
+      <th>スラッグ</th>
       <th>タイトル</th>
       <th>本文</th>
       <th>公開状態</th>
@@ -19,6 +20,7 @@
     <% posts.each do |post| %>
       <tr>
         <td><%= h post.id %></td>
+        <td><%= h post.slug %></td>
         <td><%= h post.title %></td>
         <td><%= h post.content %></td>
         <td><%= h publish_statuses.find { |status| status.id == post.publish_status_id }.label %></td>

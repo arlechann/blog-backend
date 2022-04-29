@@ -1,6 +1,7 @@
 class UpdatePostUseCase
   InputPort = Struct.new(
     :id,
+    :slug,
     :title,
     :content,
     :publish_status_id,
@@ -15,10 +16,11 @@ class UpdatePostUseCase
 
   def process
     post = @post_repo.find_by_id(@input_port.id)
+    post.update_slug(@input_port.slug)
     post.update_title(@input_port.title)
     post.update_content(@input_port.content)
     post.update_publish_status_id(@input_port.publish_status_id)
-    updated_row_count = @post_repo.update(post)
-    @output_port.call(post, updated_row_count)
+    updated_row = @post_repo.update(post)
+    @output_port.call(post, updated_row)
   end
 end

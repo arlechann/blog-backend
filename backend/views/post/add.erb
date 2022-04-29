@@ -1,5 +1,9 @@
 <form method="POST">
   <div>
+    <label for="slug">スラッグ</label>
+    <input type="text" id="slug" name="slug" value="<%= h post && post.slug %>" />
+  </div>
+  <div>
     <label for="title">タイトル</label>
     <input type="text" id="title" name="title" value="<%= h post && post.title %>" />
   </div>
