@@ -1,23 +1,15 @@
 services:
-  api:
-    build: ./backend
-    image: blog-api
+  app:
+    build: ./app
+    image: blog-app
     environment:
       TZ: Asia/Tokyo
     networks:
-      - api
       - db
+    ports:
+      - 4567:4567
     depends_on:
       - db
-  nginx:
-    build: ./frontend
-    image: blog-nginx
-    environment:
-      TZ: Asia/Tokyo
-    ports:
-      - 80:80
-    networks:
-      - api
   db:
     build: ./database
     image: blog-db
@@ -32,9 +24,8 @@ services:
 
 volumes:
   db:
+    driver: local
 
 networks:
-  api:
-    driver: bridge
   db:
     driver: bridge
