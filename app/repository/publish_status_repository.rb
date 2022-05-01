@@ -19,4 +19,12 @@ class PublishStatusRepository
       WHERE id = ?
     SQL
   end
+
+  def find_by_code(code)
+    PublishStatus.from_h(@db[<<~SQL, code].first)
+      SELECT id, code, label
+      FROM publish_statuses
+      WHERE code = ?
+    SQL
+  end
 end
