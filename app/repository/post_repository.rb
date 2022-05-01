@@ -19,10 +19,6 @@ class PostRepository
       FROM posts
       LEFT JOIN slugs
         ON posts.id = slugs.post_id
-      INNER JOIN publish_statuses
-        ON posts.publish_status_id = publish_statuses.id
-      INNER JOIN administrators
-        ON posts.administrator_id = administrators.id
     SQL
   end
 
@@ -40,10 +36,6 @@ class PostRepository
       FROM posts
       LEFT JOIN slugs
         ON posts.id = slugs.post_id
-      INNER JOIN publish_statuses
-        ON posts.publish_status_id = publish_statuses.id
-      INNER JOIN administrators
-        ON posts.administrator_id = administrators.id
       WHERE posts.id = ?
     SQL
   end
@@ -62,10 +54,6 @@ class PostRepository
       FROM posts
       INNER JOIN slugs
         ON posts.id = slugs.post_id
-      INNER JOIN publish_statuses
-        ON posts.publish_status_id = publish_statuses.id
-      INNER JOIN administrators
-        ON posts.administrator_id = administrators.id
       WHERE slugs.slug = ?
     SQL
   end
