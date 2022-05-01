@@ -5,19 +5,11 @@ services:
     environment:
       TZ: Asia/Tokyo
     networks:
-      - app
       - db
+    ports:
+      - 4567:4567
     depends_on:
       - db
-  nginx:
-    build: ./web
-    image: blog-nginx
-    environment:
-      TZ: Asia/Tokyo
-    ports:
-      - 80:80
-    networks:
-      - app
   db:
     build: ./database
     image: blog-db
@@ -32,9 +24,8 @@ services:
 
 volumes:
   db:
+    driver: local
 
 networks:
-  app:
-    driver: bridge
   db:
     driver: bridge

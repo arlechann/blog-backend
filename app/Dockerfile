@@ -9,5 +9,5 @@ RUN bundle install
 
 COPY . .
 
-CMD ["bundle", "exec", "rackup", "-s", "thin", "-o", "api", "-p", "4567"]
+CMD ["bundle", "exec", "rackup", "-s", "thin", "-o", "0.0.0.0", "-p", "4567"]
 
