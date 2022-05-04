@@ -8,6 +8,7 @@ require_relative 'lib/session_login/login'
 require_relative 'error/http'
 require_relative 'use_case/post/list_posts_for_admin_use_case'
 require_relative 'use_case/post/show_post_for_admin_use_case'
+require_relative 'use_case/post/list_posts_for_visitor_use_case'
 require_relative 'use_case/post/create_post_use_case'
 require_relative 'use_case/post/update_post_use_case'
 require_relative 'use_case/post/delete_post_use_case'
@@ -168,21 +169,20 @@ class App < Sinatra::Application
   end
 
   get '/api/v1/posts' do
-    output = Proc.new do |posts, publish_statuses, administrators|
+    output = Proc.new do |posts|
       [
         200,
         { 'Content-Type' => 'application/json' },
-        JSON.generate(posts.map { |post| post.to_h })
+        JSON.generate(posts)
       ]
     end
 
-    ListPostsForAdminUseCase
+    ListPostsForVisitorUseCase
       .new(
         nil,
         output,
         PostRepository.new(DB),
         PublishStatusRepository.new(DB),
-        AdministratorRepository.new(DB),
       )
       .process
   end
