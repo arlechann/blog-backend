@@ -1,4 +1,5 @@
 require_relative '../model/post'
+require_relative '../error/repository'
 
 class PostRepository
   def initialize(db)
@@ -23,7 +24,7 @@ class PostRepository
   end
 
   def find_by_id(post_id)
-    Post.from_h(@db[<<~SQL, post_id].first)
+    Post.from_h(@db[<<~SQL, post_id].first!)
       SELECT
         posts.id AS id,
         slugs.slug AS slug,
@@ -38,10 +39,12 @@ class PostRepository
         ON posts.id = slugs.post_id
       WHERE posts.id = ?
     SQL
+  rescue Sequel::NoMatchingRow => e
+    raise Repository::NoDataError.new
   end
 
   def find_by_slug(slug)
-    Post.from_h(@db[<<~SQL, slug].first)
+    Post.from_h(@db[<<~SQL, slug].first!)
       SELECT
         posts.id AS id,
         slugs.slug AS slug,
@@ -56,6 +59,8 @@ class PostRepository
         ON posts.id = slugs.post_id
       WHERE slugs.slug = ?
     SQL
+  rescue Sequel::NoMatchingRow => e
+    raise Repository::NoDataError.new
   end
 
   def find_all_by_publish_status_id(publish_status_id)
