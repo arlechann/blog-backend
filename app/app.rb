@@ -6,8 +6,8 @@ require 'time'
 require_relative 'lib/db'
 require_relative 'lib/session_login/login'
 require_relative 'error/http'
-require_relative 'use_case/post/list_post_use_case'
-require_relative 'use_case/post/show_post_use_case'
+require_relative 'use_case/post/list_posts_for_admin_use_case'
+require_relative 'use_case/post/show_post_for_admin_use_case'
 require_relative 'use_case/post/create_post_use_case'
 require_relative 'use_case/post/update_post_use_case'
 require_relative 'use_case/post/delete_post_use_case'
@@ -66,7 +66,7 @@ class App < Sinatra::Application
       }
     end
 
-    ListPostUseCase
+    ListPostsForAdminUseCase
       .new(
         nil,
         output,
@@ -111,7 +111,7 @@ class App < Sinatra::Application
     ps_repo = PublishStatusRepository.new(DB)
     publish_statuses = ps_repo.all
 
-    input = ShowPostUseCase::InputPort.new(id: params[:id])
+    input = ShowPostForAdminUseCase::InputPort.new(id: params[:id])
 
     output = Proc.new do |post, publish_status, administrator|
       @title = '投稿編集'
@@ -121,7 +121,7 @@ class App < Sinatra::Application
       }
     end
 
-    ShowPostUseCase
+    ShowPostForAdminUseCase
       .new(
         input,
         output,
@@ -176,7 +176,7 @@ class App < Sinatra::Application
       ]
     end
 
-    ListPostUseCase
+    ListPostsForAdminUseCase
       .new(
         nil,
         output,
@@ -188,7 +188,7 @@ class App < Sinatra::Application
   end
 
   get '/api/v1/posts/:id' do
-    input = ShowPostUseCase::InputPort.new(id: params[:id])
+    input = ShowPostForAdminUseCase::InputPort.new(id: params[:id])
 
     output = Proc.new do |post, publish_status, administrator|
       [
@@ -198,7 +198,7 @@ class App < Sinatra::Application
       ]
     end
 
-    ShowPostUseCase
+    ShowPostForAdminUseCase
       .new(
         input,
         output,
