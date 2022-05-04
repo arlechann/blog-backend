@@ -1,4 +1,5 @@
 require_relative '../model/login_user'
+require_relative './error/repository'
 
 class LoginUserRepository
   def initialize(db)

@@ -1,4 +1,5 @@
 require_relative '../model/administrator'
+require_relative './error/repository'
 
 class AdministratorRepository
   def initialize(db)

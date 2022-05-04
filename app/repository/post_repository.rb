@@ -1,5 +1,5 @@
 require_relative '../model/post'
-require_relative '../error/repository'
+require_relative './error/repository'
 
 class PostRepository
   def initialize(db)

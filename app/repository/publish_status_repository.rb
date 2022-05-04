@@ -1,5 +1,5 @@
 require_relative '../model/publish_status'
-require_relative '../error/repository'
+require_relative './error/repository'
 
 class PublishStatusRepository
   def initialize(db)
