@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>デバッグ</title>
+  </head>
+  <body>
+    <h1>デバッグ</h1>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>項目</th>
+          <th>値</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% data.each do |key, value| %>
+          <tr>
+            <td><%= h key.to_s %></td>
+            <td><%= h value.to_s %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </body>
+</html>
+

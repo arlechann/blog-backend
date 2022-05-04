@@ -1,0 +1,300 @@
+﻿# A5:ER FORMAT:16
+# A5:ER ENCODING:UTF8
+# A5:ER Mk-1 Copyright © 2007 m.matsubara
+# A5:SQL Mk-2 Version 2.17.1 Copyright © 1997 - 2022 m.matsubara
+#  https://a5m2.mmatsubara.com
+
+[Manager]
+ProjectName=blog-engine
+Author=arlechann
+MaxEntityRowShow=1000
+ReadOnlyRecommend=0
+Page=Main
+PageInfo="Main",2,"A3Landscape",$FFFFFF
+Domain=ID=serial
+DomainInfo="ID","serial","","id"
+Domain=ref_ID=integer
+DomainInfo="ref_ID","integer","",""
+Domain=メールアドレス=varchar(255)
+DomainInfo="メールアドレス","varchar(255)","","email"
+Domain=パスワードハッシュ=char(60)
+DomainInfo="パスワードハッシュ","char(60)","","password"
+Domain=スラッグ=text
+DomainInfo="スラッグ","text","","slug"
+Domain=タイトル=varchar(255)
+DomainInfo="タイトル","varchar(255)","","title"
+Domain=本文=text
+DomainInfo="本文","text","","content"
+Domain=最終更新日時=timestamp with time zone
+DomainInfo="最終更新日時","timestamp with time zone","","last_updated_at"
+Domain=作成日時=timestamp with time zone
+DomainInfo="作成日時","timestamp with time zone","","created_at"
+Domain=コメント投稿者名=varchar(255)
+DomainInfo="コメント投稿者名","varchar(255)","TODO: 文字列長","name"
+Domain=コメント本文=text
+DomainInfo="コメント本文","text","","content"
+Domain=コード=varchar(32)
+DomainInfo="コード","varchar(32)","","code"
+Domain=表示名=varchar(255)
+DomainInfo="表示名","varchar(255)","","label"
+LogicalView=1
+DecodeDomain=0
+ViewModePageIndividually=1
+ViewMode=2
+ViewFormat=0
+UseNondependenceDashLine=0
+FontName=Meiryo UI
+FontSize=9
+PaperSize=A4Landscape
+HeaderLeft=
+HeaderCenter=
+HeaderRight=
+FooterLeft=
+FooterCenter=
+FooterRight=
+ShowPageoutRelation=1
+RDBMSType=6
+RDBMSTypeName=PostgreSQL
+GenerateDropTableStatement=1
+DropTableIfExists=1
+BackupRestoreTempTable=0
+CreateFk=1
+DefaultPkName=%0:s_PKC
+DefaultPkIndexName=%0:s_PKI
+DefaultIndexName=%0:s_IX%1:d
+DefaultFkName=%0:s_FK%1:d
+SqlSeparator=0
+UpperCaseKeyword=1
+CreateOrder=Dependent
+ShowTag=1
+ShowCommonAttributes=0
+BugFixEntityWidth=1
+
+[Entity]
+PName=administrators
+LName=管理者
+Comment=
+TableOption=
+Page=MAIN
+Left=250
+Top=250
+Field="ID","id","*ID","NOT NULL",0,"","",$FFFFFFFF,""
+Field="メールアドレス","email","*メールアドレス","NOT NULL",,"","",$FFFFFFFF,""
+Index==1,email 
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+ModifiedDateTime=20220411040159
+Position="MAIN",250,250,344,156
+ZOrder=9
+
+[Entity]
+PName=administrator_secrets
+LName=管理者パスワード
+Comment=
+TableOption=
+Page=MAIN
+Left=850
+Top=250
+Field="ID","id","*ID","NOT NULL",0,"","",$FFFFFFFF,""
+Field="管理者ID","administrator_id","*ref_ID","NOT NULL",,"","",$FFFFFFFF,""
+Field="パスワードハッシュ","password","*パスワードハッシュ","NOT NULL",,"","",$FFFFFFFF,""
+Index==0,administrator_id 
+Index==0,password 
+EffectMode=None
+Tag= 
+Color=$000000
+BkColor=$FFFFFF
+ModifiedDateTime=20220415015453
+Position="MAIN",850,250,336,135
+ZOrder=10
+
+[Relation]
+Entity1=administrators
+Entity2=administrator_secrets
+RelationType1=2
+RelationType2=2
+Fields1=id
+Fields2=administrator_id
+Cardinarity1=
+Cardinarity2=
+Position="MAIN",0,1766,8234,2041,R,R,""
+Dependence=0
+Caption=
+PName=
+ModifiedDateTime=20220411040008
+LineMode=0
+Bar1=177
+Bar2=823
+Bar3=204
+TermPos1=R
+TermPos2=R
+ZOrder=11
+
+[Entity]
+PName=posts
+LName=投稿
+Comment=
+TableOption=
+Page=MAIN
+Left=250
+Top=650
+Field="ID","id","*ID","NOT NULL",0,"","",$FFFFFFFF,""
+Field="タイトル","title","*タイトル","NOT NULL",,"","",$FFFFFFFF,""
+Field="本文","content","*本文","NOT NULL",,"","",$FFFFFFFF,""
+Field="公開状態ID","publish_status_id","*ref_ID","NOT NULL",,"","",$FFFFFFFF,""
+Field="管理者ID","administrator_id","*ref_ID","NOT NULL",,"","",$FFFFFFFF,""
+Field="作成日時","created_at","*作成日時","NOT NULL",,"","",$FFFFFFFF,""
+Field="最終更新日時","last_updated_at","*最終更新日時","NOT NULL",,"","",$FFFFFFFF,""
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+ModifiedDateTime=20220412003427
+Position="MAIN",250,650,386,270
+ZOrder=34
+
+[Entity]
+PName=slugs
+LName=スラッグ
+Comment=
+TableOption=
+Page=MAIN
+Left=850
+Top=650
+Field="投稿ID","post_id","*ref_ID","NOT NULL",,"","",$FFFFFFFF,""
+Field="スラッグ","slug","*スラッグ","NOT NULL",,"","",$FFFFFFFF,""
+Index==1,slug
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+ModifiedDateTime=20220412003338
+Position="MAIN",850,650,344,249
+ZOrder=35
+
+[Relation]
+Entity1=posts
+Entity2=slugs
+RelationType1=2
+RelationType2=3
+Fields1=id
+Fields2=post_id
+Cardinarity1=
+Cardinarity2=
+Position="MAIN",0,2950,7050,3199,R,R,""
+Dependence=0
+Caption=
+PName=
+ModifiedDateTime=20220412003349
+LineMode=0
+Bar1=295
+Bar2=705
+Bar3=320
+TermPos1=R
+TermPos2=R
+ZOrder=36
+
+[Relation]
+Entity1=administrators
+Entity2=posts
+RelationType1=2
+RelationType2=3
+Fields1=id
+Fields2=administrator_id
+Cardinarity1=
+Cardinarity2=
+Position="MAIN",0,2988,7012,1173,R,R,""
+Dependence=0
+Caption=
+PName=
+ModifiedDateTime=20220412003441
+LineMode=0
+Bar1=299
+Bar2=701
+Bar3=117
+TermPos1=R
+TermPos2=R
+ZOrder=37
+
+[Entity]
+PName=publish_statuses
+LName=公開状態
+Comment=
+TableOption=
+Page=MAIN
+Left=250
+Top=1200
+Field="ID","id","*ID","NOT NULL",0,"","",$FFFFFFFF,""
+Field="コード","code","*コード","NOT NULL",,"","",$FFFFFFFF,""
+Field="表示名","label","*表示名","NOT NULL",,"","",$FFFFFFFF,""
+Index==1,code 
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+ModifiedDateTime=20220412003631
+Position="MAIN",250,1200,386,198
+ZOrder=38
+
+[Relation]
+Entity1=publish_statuses
+Entity2=posts
+RelationType1=2
+RelationType2=3
+Fields1=id
+Fields2=publish_status_id
+Cardinarity1=
+Cardinarity2=
+Position="MAIN",0,2566,7434,2670,R,R,""
+Dependence=0
+Caption=
+PName=
+ModifiedDateTime=20220412003649
+LineMode=0
+Bar1=257
+Bar2=743
+Bar3=267
+TermPos1=R
+TermPos2=R
+ZOrder=39
+
+[Entity]
+PName=comments
+LName=コメント
+Comment=
+TableOption=
+Page=MAIN
+Left=850
+Top=1200
+Field="投稿ID","post_id","*ref_ID","NOT NULL",,"","",$FFFFFFFF,""
+Field="投稿者名","name","*コメント投稿者名","NOT NULL",,"","",$FFFFFFFF,""
+Field="本文","content","*コメント本文","NOT NULL",,"","",$FFFFFFFF,""
+Field="作成日時","created_at","*作成日時","NOT NULL",,"","",$FFFFFFFF,""
+Index==0,post_id
+Index==0,created_at
+EffectMode=None
+Color=$000000
+BkColor=$FFFFFF
+ModifiedDateTime=20220412005437
+Position="MAIN",850,1200,325,225
+ZOrder=42
+
+[Relation]
+Entity1=posts
+Entity2=comments
+RelationType1=2
+RelationType2=3
+Fields1=id
+Fields2=post_id
+Cardinarity1=
+Cardinarity2=
+Position="MAIN",0,4697,5303,2988,R,R,""
+Dependence=0
+Caption=
+PName=
+ModifiedDateTime=20220412005418
+LineMode=0
+Bar1=470
+Bar2=530
+Bar3=299
+TermPos1=R
+TermPos2=R
+ZOrder=43

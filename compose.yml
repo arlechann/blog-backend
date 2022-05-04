@@ -1,0 +1,31 @@
+services:
+  app:
+    build: ./app
+    image: blog-app
+    environment:
+      TZ: Asia/Tokyo
+    networks:
+      - db
+    ports:
+      - 4567:4567
+    depends_on:
+      - db
+  db:
+    build: ./database
+    image: blog-db
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: blog
+      TZ: Asia/Tokyo
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - db
+
+volumes:
+  db:
+    driver: local
+
+networks:
+  db:
+    driver: bridge
