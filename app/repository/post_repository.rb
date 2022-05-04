@@ -77,29 +77,33 @@ class PostRepository
   end
 
   def insert(post)
-    post.set_id(
-      @db[:posts].insert({
-        title: post.title,
-        content: post.content,
-        publish_status_id: post.publish_status_id,
-        administrator_id: post.administrator_id,
-        created_at: post.created_at,
-        last_updated_at: post.last_updated_at,
-      })
-    )
-    save_slug(post.id, post.slug)
+    @db.transaction do
+      post.set_id(
+        @db[:posts].insert({
+          title: post.title,
+          content: post.content,
+          publish_status_id: post.publish_status_id,
+          administrator_id: post.administrator_id,
+          created_at: post.created_at,
+          last_updated_at: post.last_updated_at,
+        })
+      )
+      save_slug(post.id, post.slug)
+    end
     nil
   end
 
   def update(post)
-    updated_row = @db[:posts].where({ id: post.id }).update({
-      title: post.title,
-      content: post.content,
-      publish_status_id: post.publish_status_id,
-      administrator_id: post.administrator_id,
-      last_updated_at: post.last_updated_at,
-    })
-    slug_updated_row = save_slug(post.id, post.slug)
+    @db.transaction do
+      updated_row = @db[:posts].where({ id: post.id }).update({
+        title: post.title,
+        content: post.content,
+        publish_status_id: post.publish_status_id,
+        administrator_id: post.administrator_id,
+        last_updated_at: post.last_updated_at,
+      })
+      slug_updated_row = save_slug(post.id, post.slug)
+    end
     [updated_row, slug_updated_row].max
   end
 
