@@ -5,6 +5,7 @@ services:
     environment:
       TZ: Asia/Tokyo
     networks:
+      - app
       - db
     ports:
       - 4567:4567
@@ -27,5 +28,8 @@ volumes:
     driver: local
 
 networks:
+  app:
+    name: blog-network
   db:
     driver: bridge
+    internal: true
