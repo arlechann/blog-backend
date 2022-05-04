@@ -1,4 +1,4 @@
-class ShowPostUseCase
+class ShowPostForAdminUseCase
   InputPort = Struct.new(:id, keyword_init: true)
 
   def initialize(input_port, output_port, post_repo, publish_status_repo, administrator_repo)

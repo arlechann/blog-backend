@@ -19,10 +19,6 @@ class PostRepository
       FROM posts
       LEFT JOIN slugs
         ON posts.id = slugs.post_id
-      INNER JOIN publish_statuses
-        ON posts.publish_status_id = publish_statuses.id
-      INNER JOIN administrators
-        ON posts.administrator_id = administrators.id
     SQL
   end
 
@@ -40,10 +36,6 @@ class PostRepository
       FROM posts
       LEFT JOIN slugs
         ON posts.id = slugs.post_id
-      INNER JOIN publish_statuses
-        ON posts.publish_status_id = publish_statuses.id
-      INNER JOIN administrators
-        ON posts.administrator_id = administrators.id
       WHERE posts.id = ?
     SQL
   end
@@ -62,11 +54,25 @@ class PostRepository
       FROM posts
       INNER JOIN slugs
         ON posts.id = slugs.post_id
-      INNER JOIN publish_statuses
-        ON posts.publish_status_id = publish_statuses.id
-      INNER JOIN administrators
-        ON posts.administrator_id = administrators.id
       WHERE slugs.slug = ?
+    SQL
+  end
+
+  def find_all_by_publish_status_id(publish_status_id)
+    @db[<<~SQL, publish_status_id].all.map { |post| Post.from_h(post) }
+      SELECT
+        posts.id AS id,
+        slugs.slug AS slug,
+        title,
+        content,
+        publish_status_id,
+        administrator_id,
+        created_at,
+        last_updated_at
+      FROM posts
+      LEFT JOIN slugs
+        ON posts.id = slugs.post_id
+      WHERE posts.publish_status_id = ?
     SQL
   end
 

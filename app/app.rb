@@ -6,8 +6,10 @@ require 'time'
 require_relative 'lib/db'
 require_relative 'lib/session_login/login'
 require_relative 'error/http'
-require_relative 'use_case/post/list_post_use_case'
-require_relative 'use_case/post/show_post_use_case'
+require_relative 'use_case/post/list_posts_for_admin_use_case'
+require_relative 'use_case/post/show_post_for_admin_use_case'
+require_relative 'use_case/post/list_posts_for_visitor_use_case'
+require_relative 'use_case/post/show_post_for_visitor_use_case'
 require_relative 'use_case/post/create_post_use_case'
 require_relative 'use_case/post/update_post_use_case'
 require_relative 'use_case/post/delete_post_use_case'
@@ -66,7 +68,7 @@ class App < Sinatra::Application
       }
     end
 
-    ListPostUseCase
+    ListPostsForAdminUseCase
       .new(
         nil,
         output,
@@ -111,7 +113,7 @@ class App < Sinatra::Application
     ps_repo = PublishStatusRepository.new(DB)
     publish_statuses = ps_repo.all
 
-    input = ShowPostUseCase::InputPort.new(id: params[:id])
+    input = ShowPostForAdminUseCase::InputPort.new(id: params[:id])
 
     output = Proc.new do |post, publish_status, administrator|
       @title = '投稿編集'
@@ -121,7 +123,7 @@ class App < Sinatra::Application
       }
     end
 
-    ShowPostUseCase
+    ShowPostForAdminUseCase
       .new(
         input,
         output,
@@ -168,29 +170,29 @@ class App < Sinatra::Application
   end
 
   get '/api/v1/posts' do
-    output = Proc.new do |posts, publish_statuses, administrators|
+    output = Proc.new do |posts|
       [
         200,
         { 'Content-Type' => 'application/json' },
-        JSON.generate(posts.map { |post| post.to_h })
+        JSON.generate(posts)
       ]
     end
 
-    ListPostUseCase
+    ListPostsForVisitorUseCase
       .new(
         nil,
         output,
         PostRepository.new(DB),
         PublishStatusRepository.new(DB),
-        AdministratorRepository.new(DB),
       )
       .process
   end
 
-  get '/api/v1/posts/:id' do
-    input = ShowPostUseCase::InputPort.new(id: params[:id])
+  get '/api/v1/posts/:slug' do
+    input = ShowPostForVisitorUseCase::InputPort.new(slug: params[:slug])
 
-    output = Proc.new do |post, publish_status, administrator|
+    output = Proc.new do |post|
+      raise Sinatra::NotFound.new if post.nil?
       [
         200,
         { 'Content-Type' => 'application/json' },
@@ -198,13 +200,12 @@ class App < Sinatra::Application
       ]
     end
 
-    ShowPostUseCase
+    ShowPostForVisitorUseCase
       .new(
         input,
         output,
         PostRepository.new(DB),
         PublishStatusRepository.new(DB),
-        AdministratorRepository.new(DB),
       )
       .process
   end

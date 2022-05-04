@@ -1,4 +1,4 @@
-class ListPostUseCase
+class ListPostsForAdminUseCase
   def initialize(
     input_port,
     output_port,
