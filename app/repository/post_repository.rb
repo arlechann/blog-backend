@@ -58,6 +58,24 @@ class PostRepository
     SQL
   end
 
+  def find_all_by_publish_status_id(publish_status_id)
+    @db[<<~SQL, publish_status_id].all.map { |post| Post.from_h(post) }
+      SELECT
+        posts.id AS id,
+        slugs.slug AS slug,
+        title,
+        content,
+        publish_status_id,
+        administrator_id,
+        created_at,
+        last_updated_at
+      FROM posts
+      LEFT JOIN slugs
+        ON posts.id = slugs.post_id
+      WHERE posts.publish_status_id = ?
+    SQL
+  end
+
   def insert(post)
     post.set_id(
       @db[:posts].insert({
