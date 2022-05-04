@@ -9,6 +9,7 @@ require_relative 'error/http'
 require_relative 'use_case/post/list_posts_for_admin_use_case'
 require_relative 'use_case/post/show_post_for_admin_use_case'
 require_relative 'use_case/post/list_posts_for_visitor_use_case'
+require_relative 'use_case/post/show_post_for_visitor_use_case'
 require_relative 'use_case/post/create_post_use_case'
 require_relative 'use_case/post/update_post_use_case'
 require_relative 'use_case/post/delete_post_use_case'
@@ -187,10 +188,11 @@ class App < Sinatra::Application
       .process
   end
 
-  get '/api/v1/posts/:id' do
-    input = ShowPostForAdminUseCase::InputPort.new(id: params[:id])
+  get '/api/v1/posts/:slug' do
+    input = ShowPostForVisitorUseCase::InputPort.new(slug: params[:slug])
 
-    output = Proc.new do |post, publish_status, administrator|
+    output = Proc.new do |post|
+      raise Sinatra::NotFound.new if post.nil?
       [
         200,
         { 'Content-Type' => 'application/json' },
@@ -198,13 +200,12 @@ class App < Sinatra::Application
       ]
     end
 
-    ShowPostForAdminUseCase
+    ShowPostForVisitorUseCase
       .new(
         input,
         output,
         PostRepository.new(DB),
         PublishStatusRepository.new(DB),
-        AdministratorRepository.new(DB),
       )
       .process
   end
