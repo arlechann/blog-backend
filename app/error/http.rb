@@ -1,7 +1,7 @@
 module HTTPError
   class Forbidden < StandardError
     def initialize(msg = "Forbidden")
-      super
+      super(msg)
     end
   end
 end

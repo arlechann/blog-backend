@@ -6,6 +6,7 @@ require 'time'
 require_relative 'lib/db'
 require_relative 'lib/session_login/login'
 require_relative 'error/http'
+require_relative 'use_case/error/use_case'
 require_relative 'use_case/post/list_posts_for_admin_use_case'
 require_relative 'use_case/post/show_post_for_admin_use_case'
 require_relative 'use_case/post/list_posts_for_visitor_use_case'
@@ -13,6 +14,7 @@ require_relative 'use_case/post/show_post_for_visitor_use_case'
 require_relative 'use_case/post/create_post_use_case'
 require_relative 'use_case/post/update_post_use_case'
 require_relative 'use_case/post/delete_post_use_case'
+require_relative 'use_case/post/error/post'
 require_relative 'repository/administrator_repository'
 require_relative 'repository/post_repository'
 require_relative 'repository/publish_status_repository'
@@ -132,6 +134,8 @@ class App < Sinatra::Application
         AdministratorRepository.new(DB),
       )
       .process
+  rescue UseCase::NoSuchPostError => e
+    raise Sinatra::NotFound.new
   end
 
   post '/post/edit/:id' do
@@ -152,6 +156,8 @@ class App < Sinatra::Application
     UpdatePostUseCase
       .new(input, output, PostRepository.new(DB))
       .process
+  rescue UseCase::NoSuchPostError => e
+    raise Sinatra::NotFound.new
   end
 
   post '/post/delete/:id' do
@@ -163,6 +169,8 @@ class App < Sinatra::Application
     DeletePostUseCase
       .new(input, output, PostRepository.new(DB))
       .process
+  rescue UseCase::NoSuchPostError => e
+    raise Sinatra::NotFound.new
   end
 
   get '/api/v1/ping' do
@@ -208,6 +216,8 @@ class App < Sinatra::Application
         PublishStatusRepository.new(DB),
       )
       .process
+  rescue UseCase::NoSuchPostError => e
+    raise Sinatra::NotFound.new
   end
 
   error HTTPError::Forbidden do
