@@ -1,3 +1,6 @@
+require_relative './error/post'
+require_relative '../../repository/error/repository'
+
 class UpdatePostUseCase
   InputPort = Struct.new(
     :id,
@@ -15,7 +18,11 @@ class UpdatePostUseCase
   end
 
   def process
-    post = @post_repo.find_by_id(@input_port.id)
+    begin
+      post = @post_repo.find_by_id(@input_port.id)
+    rescue Repository::NoDataError => e
+      raise UseCase::NoSuchPostError.new(e.message)
+    end
     post.update_slug(@input_port.slug)
     post.update_title(@input_port.title)
     post.update_content(@input_port.content)
