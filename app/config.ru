@@ -1,3 +1,4 @@
+require 'rack/cors'
 require_relative 'app'
 require_relative 'lib/db'
 require_relative 'lib/session_login/login'
@@ -8,6 +9,15 @@ use Rack::Session::Cookie,
   secret: ''
 
 use Rack::Protection
+
+use Rack::Cors do
+  allow do
+    origins /localhost(:[0-9]+)?/
+    resource '/api/v1/*',
+      headers: :any,
+      methods: :get
+  end
+end
 
 use Rack::SessionLogin, {
   form_login_id_key: 'email',
