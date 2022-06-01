@@ -113,6 +113,7 @@ class PostRepository
   end
 
   def delete_by_id(post_id)
+    delete_slug_by_post_id(post_id)
     @db[:posts].where({ id: post_id }).delete
     nil
   end
