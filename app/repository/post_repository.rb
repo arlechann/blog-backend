@@ -99,6 +99,7 @@ class PostRepository
   end
 
   def update(post)
+    updated_row = slug_updated_row = nil
     @db.transaction do
       updated_row = @db[:posts].where({ id: post.id }).update({
         title: post.title,
